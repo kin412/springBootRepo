@@ -2,6 +2,8 @@ package com.kin.springbootproject1.board.service;
 
 import com.kin.springbootproject1.board.dto.boardDto;
 import com.kin.springbootproject1.board.entity.boardEntity;
+import com.kin.springbootproject1.board.entity.boardFileEntity;
+import com.kin.springbootproject1.board.repository.boardFileRepository;
 import com.kin.springbootproject1.board.repository.boardRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +32,53 @@ import java.util.Optional;
 public class boardService {
 
     private final boardRepository boardRepository;
+    private final boardFileRepository boardFileRepository;
 
     // dto -> entity
-    public void save(boardDto boardDto) {
-        boardEntity saveBoardEntity = boardEntity.toSaveEntity(boardDto);
-        boardRepository.save(saveBoardEntity); //entity를 받고 entity를 리턴
+    public void save(boardDto boardDto) throws IOException {
+        //파일 첨부 여부에 따라 로직 분리
+        if(boardDto.getBoardFile().isEmpty()) {
+            // 첨부 파일 없음
+            boardEntity saveBoardEntity = boardEntity.toSaveEntity(boardDto);
+            boardRepository.save(saveBoardEntity); //entity를 받고 entity를 리턴
+        }else{
+            //첨부 파일 있음
+            /*
+              1. dto에 담긴 파일을 꺼냄
+              2. 파일의 이름 가져옴
+              3. 서버 저장용 이름 추가 => 내사진.jpg = 13758934759_내사진.jpg - uuid, currentTimeMillis
+              4. 저장 경로 설정
+              5. 해당 경로에 파일 저장
+              6. board_table에 해당 데이터 save 처리
+              7. board_file_table에 해당 데이터 save 처리
+             */
+            boardEntity saveBoardEntity = boardEntity.toSaveFileEntity(boardDto);
+            Long saveId = boardRepository.save(saveBoardEntity).getId();
+            boardEntity board = boardRepository.findById(saveId).get();
+
+            for(MultipartFile boardFile : boardDto.getBoardFile()) {
+                //MultipartFile boardFile = boardDto.getBoardFile(); // 1
+                String originalFilename = boardFile.getOriginalFilename(); // 2
+                String storedFileName = System.currentTimeMillis() + "_" + originalFilename; // 3
+                String savePath = "C:/intellij_workspace/springBootProject1/images/" + storedFileName; // 4
+                boardFile.transferTo(new File(savePath)); // 5. savePath로 파일을 넘긴다. - 파일저장
+
+                /*
+                boardEntity saveBoardEntity = boardEntity.toSaveFileEntity(boardDto);
+                Long saveId = boardRepository.save(saveBoardEntity).getId();
+                boardEntity board = boardRepository.findById(saveId).get();
+                 */
+                boardFileEntity boardFileEntity1 = boardFileEntity.toBoardFileEntity(board, originalFilename, storedFileName);
+                boardFileRepository.save(boardFileEntity1);
+            }
+
+        }
+
+
     }
 
     // entity -> dto
+    @Transactional //85라인 boardDto.toDto(); 에서 부모엔티티가 자식엔티티에 접근하기 때문에 붙여줘야함
     public List<boardDto> findAll() {
         List<boardEntity> boardEntityList = boardRepository.findAll();
         List<boardDto> boardDtoList = new ArrayList<>();
@@ -51,6 +95,7 @@ public class boardService {
         boardRepository.updateHits(id);
     }
 
+    @Transactional //102라인 boardDto.toDto(); 에서 부모엔티티가 자식엔티티에 접근하기 때문에 붙여줘야함
     public boardDto findById(Long id) {
         Optional<boardEntity> optionalBoardEntity = boardRepository.findById(id);
         if (optionalBoardEntity.isPresent()) {

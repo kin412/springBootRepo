@@ -2,11 +2,16 @@ package com.kin.springbootproject1.board.entity;
 
 import com.kin.springbootproject1.board.dto.boardDto;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //db의 테이블 역할을 하는 클래스
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "board_table")
 @SequenceGenerator( // 시퀀스 설정
         name = "BOARD_SEQ_GENERATOR",
@@ -36,6 +41,14 @@ public class boardEntity extends baseEntity {
     @Column
     private int boardHits;
 
+    @Column
+    private int fileAttached; // 1 or 0
+
+    //mappedBy = "boardEntity" 의 boardEntity는 boardFileEntity.java 내의 외래키 변수명
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<boardFileEntity> boardFileEnitityList = new ArrayList<boardFileEntity>();
+
+
     //dto에 담긴 값들을 entity 객체로 옮겨 닮는 함수
     public static boardEntity toSaveEntity(boardDto boardDto){
         boardEntity boardEntity = new boardEntity();
@@ -44,6 +57,7 @@ public class boardEntity extends baseEntity {
         boardEntity.setBoardTitle(boardDto.getBoardTitle());
         boardEntity.setBoardContents(boardDto.getBoardContents());
         boardEntity.setBoardHits(0);
+        boardEntity.setFileAttached(0); //파일 없음
         return boardEntity;
     }
 
@@ -57,4 +71,16 @@ public class boardEntity extends baseEntity {
         boardEntity.setBoardHits(boardDto.getBoardHits());
         return boardEntity;
     }
+
+    public static boardEntity toSaveFileEntity(boardDto boardDto){
+        boardEntity boardEntity = new boardEntity();
+        boardEntity.setBoardWriter(boardDto.getBoardWriter());
+        boardEntity.setBoardPass(boardDto.getBoardPass());
+        boardEntity.setBoardTitle(boardDto.getBoardTitle());
+        boardEntity.setBoardContents(boardDto.getBoardContents());
+        boardEntity.setBoardHits(0);
+        boardEntity.setFileAttached(1); //파일 없음
+        return boardEntity;
+    }
+
 }

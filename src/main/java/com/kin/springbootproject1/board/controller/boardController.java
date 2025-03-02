@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -26,7 +27,7 @@ public class boardController {
 
     @PostMapping("/save")
     //@RequestParam("boardWriter") String boardWriter
-    public String save(@ModelAttribute boardDto boardDto) {
+    public String save(@ModelAttribute boardDto boardDto) throws IOException {
         System.out.println("boardDto = " + boardDto);
         boardService.save(boardDto);
 
