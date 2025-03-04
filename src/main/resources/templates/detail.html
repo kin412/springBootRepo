@@ -85,7 +85,8 @@
     }
 
     const commentWrite = () => {
-        const writer = document.getElementById("commentWriter").value;
+        //const writer = document.getElementById("commentWriter").value;
+        const writer = $("#commentWriter").val(); //제이쿼리도 legacy와 동일
         const contents = document.getElementById("commentContents").value;
         console.log("작성자 : " + writer);
         console.log("내용 : " + contents);
