@@ -11,6 +11,12 @@ spring:
     password: 1234
   thymeleaf:
     cache: false
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: true
+      name: firstJob
 
   jpa:
     open-in-view: false
