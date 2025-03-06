@@ -23,6 +23,9 @@ public class boardController {
     private final boardService boardService;
     private final commentService commentService;
 
+    //builder패턴
+    //private boardDto bbb = boardDto.builder().boardTitle("title").build();
+
     @GetMapping("/save")
     public String saveForm() {
         return "save";

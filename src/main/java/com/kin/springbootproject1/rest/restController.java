@@ -147,8 +147,8 @@ public class restController {
         return "success";
     }
 
-    //consumer를 통한 데이터제한
-    //consumer는 특정타입의 데이터를 받도록 처리하는 옵션(기본값 json)
+    //consumes를 통한 데이터제한
+    //consumes는 특정타입의 데이터를 받도록 처리하는 옵션(기본값 json)
     //클라이언트에는 Content-type을 이용해서 보내는 데이터에 대한 타입을 명시 (무조건 명시해야 함)
     @PostMapping(value="/getResult", consumes = "text/plain")
     public String getResult(@RequestBody String data) {
