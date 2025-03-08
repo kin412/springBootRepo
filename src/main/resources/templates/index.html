@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -17,12 +19,30 @@
             location.href = "/board/paging";
         }
 
+        const adminReq = () => {
+            location.href = "/admin/main";
+        }
+
     </script>
 </head>
 <body>
     <h2> 최초 index! ㅎㅇ</h2>
     <button onclick="saveReq()">글작성</button>
     <button onclick="listReq()">글목록</button>
-    <button onclick="pagingReq()">페이징 목록</button>
+    <button onclick="pagingReq()">페이징 목록</button><br>
+    <!-- security 권한체크. 관리자만 눌렀을때 페이지 들어가짐. -->
+    <button onclick="adminReq()">관리자 페이지 1</button><br>
+    <!-- security 권한체크. 관리자만 보이는 버튼 -->
+    <div sec:authorize="hasRole('ADMIN')">
+     <button onclick="adminReq()">관리자 페이지 2</button>
+    </div><br>
+
+    <div sec:authorize="isAuthenticated()">
+        Only Authenticated user can see this Text
+    </div><br>
+
+    Authenticated username : <div sec:authentication="name"></div>
+    Authenticated user rols : <div sec:authentication="principal.authorities"></div>
+
 </body>
 </html>
