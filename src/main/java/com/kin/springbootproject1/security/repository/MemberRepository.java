@@ -18,6 +18,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
     */
 
     @EntityGraph(attributePaths = {"roles"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("select m from MemberEntity m where m.id =:id")
-    Optional<MemberEntity> findbyId(String id);
+    @Query("select m from MemberEntity m where m.id =:id and m.fromSocial =:fromSocial")
+    Optional<MemberEntity> findByIdAndFromSocial(String id, Boolean fromSocial);
+
 }

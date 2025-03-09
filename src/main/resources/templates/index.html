@@ -41,6 +41,7 @@
         Only Authenticated user can see this Text
     </div><br>
 
+    <!-- permitAll 시엔 아래 코드는 안됨. 없는 정보에 접근하니 로그인화면으로 팅김 -> 애초에 permitAll은 로그인안해도 되는데 팅기니 모순 -->
     Authenticated username : <div sec:authentication="name"></div>
     Authenticated user rols : <div sec:authentication="principal.authorities"></div>
 

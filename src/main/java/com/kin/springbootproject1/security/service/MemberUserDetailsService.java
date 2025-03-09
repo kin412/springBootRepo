@@ -26,7 +26,7 @@ public class MemberUserDetailsService implements UserDetailsService {
         log.info("MemberUserDetailsService loadUserByUsername : " + username);
 
         //Optional<MemberEntity> result = memberRepository.findbyEmail(username, false);
-        Optional<MemberEntity> result = memberRepository.findbyId(username);
+        Optional<MemberEntity> result = memberRepository.findByIdAndFromSocial(username, false);
 
         //result.isEmpty()
         if(!result.isPresent()){

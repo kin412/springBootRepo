@@ -17,6 +17,8 @@ spring:
     job:
       enabled: false
       name: firstJob
+  profiles:
+    include: oauth
 
   jpa:
     open-in-view: false

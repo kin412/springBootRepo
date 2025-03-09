@@ -59,7 +59,7 @@ public class MemberTests {
     @Test
     public void testRead(){
         //Optional<MemberEntity> result = memberRepository.findbyEmail("kin412@naver.com", true);
-        Optional<MemberEntity> result = memberRepository.findbyId("1");
+        Optional<MemberEntity> result = memberRepository.findByIdAndFromSocial("1",false);
         MemberEntity memberEntity = result.get();
         System.out.println(memberEntity);
     }
