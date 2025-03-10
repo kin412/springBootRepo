@@ -24,4 +24,11 @@ public class homeController {
         return "index";
         //return "index2"; // sec 태그(sec:authentication)를 쓰지않는 index - permitall 정상 작동
     }
+
+    @GetMapping("/restIndex")
+    public String restIndex() {
+        log.info("--restIndex--");
+        return "rest/restIndex";
+    }
+
 }

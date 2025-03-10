@@ -3,8 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        const goIndex = () => {
+            location.href = "/";
+        }
+
+        const fetchReq = () => {
+            console.log("---fetchReq---");
+            fetch("/rest/getText/23")
+                .then((Response) => {return Response.text()})
+                .then((data) => {
+                    console.log(data);
+                    return "100"
+                })
+                .then((data) => console.log("last chain console : " + data));
+        }
+
+    </script>
 </head>
 <body>
+    <button onclick="goIndex()">초기화면</button><br>
+    welcome restIndex <br>
+    <button onclick="fetchReq()">fetchTest</button>
 
 </body>
 </html>

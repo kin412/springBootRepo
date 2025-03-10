@@ -15,11 +15,13 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequestMapping("/rest")
 public class restController {
 
     // hello world
-    @GetMapping("/getText")
-    public String getText() {
+    @GetMapping("/getText/{id}")
+    public String getText(@PathVariable("id") String id) {
+        log.info("getText id : " + id);
         return "hello world";
     }
 
@@ -213,5 +215,7 @@ public class restController {
 
         return responseEntity;
     }
+
+
 
 }

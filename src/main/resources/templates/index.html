@@ -23,13 +23,18 @@
             location.href = "/admin/main";
         }
 
+        const apiReq = () => {
+            location.href = "/restIndex";
+        }
+
     </script>
 </head>
 <body>
     <h2> 최초 index! ㅎㅇ</h2>
     <button onclick="saveReq()">글작성</button>
     <button onclick="listReq()">글목록</button>
-    <button onclick="pagingReq()">페이징 목록</button><br>
+    <button onclick="pagingReq()">페이징 목록</button>
+    <button onclick="apiReq()">-api-</button><br>
     <!-- security 권한체크. 관리자만 눌렀을때 페이지 들어가짐. -->
     <button onclick="adminReq()">관리자 페이지 1</button><br>
     <!-- security 권한체크. 관리자만 보이는 버튼 -->

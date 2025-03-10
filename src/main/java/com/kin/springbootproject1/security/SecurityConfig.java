@@ -60,9 +60,11 @@ public class SecurityConfig {
                     //.requestMatchers("/board/*").permitAll() // /board/ 하위 경로에 대해 모든 권한이 접근가능. 로그인하지않은 익명의 사용자도
                     //.requestMatchers("/board/*").hasRole("ADMIN")
                     //anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
-                    .requestMatchers("/board/*").hasAnyRole("USER","ADMIN")
+                    .requestMatchers("/board/*"
+                            , "/restIndex/**").hasAnyRole("USER","ADMIN")
                     .requestMatchers("/admin/*").hasRole("ADMIN")
-                    .requestMatchers("/upload/**").permitAll(); // 이미지 요청 허용
+                    .requestMatchers("/upload/**").permitAll() // 이미지 요청 허용
+                    .requestMatchers("/rest/**").permitAll(); //rest api 허용
 
 
 
