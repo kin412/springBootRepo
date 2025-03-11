@@ -64,8 +64,8 @@ public class SecurityConfig {
                             , "/restIndex/**").hasAnyRole("USER","ADMIN")
                     .requestMatchers("/admin/*").hasRole("ADMIN")
                     .requestMatchers("/upload/**").permitAll() // 이미지 요청 허용
-                    .requestMatchers("/rest/**").permitAll(); //rest api 허용
-
+                    .requestMatchers("/rest/**").permitAll() //rest api 허용
+                    .requestMatchers("/notes/**").permitAll(); //rest api 허용
 
 
         });
