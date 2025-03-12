@@ -1,23 +1,30 @@
 package com.kin.springbootproject1.security;
 
+import com.kin.springbootproject1.security.customHandler.ApiLoginFailHandler;
 import com.kin.springbootproject1.security.customHandler.CustomAccessDeniedHandler;
 import com.kin.springbootproject1.security.customHandler.CustomAuthFailureHandler;
 import com.kin.springbootproject1.security.customHandler.CustomSuccessHandler;
+import com.kin.springbootproject1.security.filter.ApiCheckFilter;
+import com.kin.springbootproject1.security.filter.ApiLoginFilter;
+import com.kin.springbootproject1.security.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 //prePostEnabled - @PreAuthorize 사용가능 여부      securedEnabled - 예전버전의 @Secure어노테이션 사용가능 여부
-//이 어노테이션을 쓰면 filterChain의 http.authorizeHttpRequests 이부분 제거하고 컨트롤러에 @PreAuthorize("hasRole('ADMIN')") 식으로 적용
+//아래 어노테이션을 쓰면 filterChain의 http.authorizeHttpRequests 이부분 제거하고 컨트롤러에 @PreAuthorize("hasRole('ADMIN')") 식으로 적용
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-//@EnableWebSecurity(debug = true)
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
+//@EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
     /*
@@ -65,7 +72,8 @@ public class SecurityConfig {
                     .requestMatchers("/admin/*").hasRole("ADMIN")
                     .requestMatchers("/upload/**").permitAll() // 이미지 요청 허용
                     .requestMatchers("/rest/**").permitAll() //rest api 허용
-                    .requestMatchers("/notes/**").permitAll(); //rest api 허용
+                    .requestMatchers("/notes/**").permitAll() //rest api 허용
+                    .requestMatchers("/api/login").permitAll(); //rest api 허용
 
 
         });
@@ -116,6 +124,23 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true));
         */
 
+        //UsernamePasswordAuthenticationFilter - 사용자의 아이디와 패스워드를 기반으로 동작하는 필터
+        //해당 필터 이전에 ApiCheckFilter가 동작하도록 지정
+        http.addFilterBefore(apiCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        //apiLoginFilter
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        //authenticationManagerBuilder.userDetailsService(apiUserDetailsService).passwordEncoder(passwordEncoder());
+        // Get AuthenticationManager
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        //반드시 필요
+        http.authenticationManager(authenticationManager);
+        //apiLoginFilter
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter("/api/login", jwtUtil());
+        apiLoginFilter.setAuthenticationManager(authenticationManager);
+        apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
+        http.addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -123,6 +148,17 @@ public class SecurityConfig {
     @Bean
     public CustomSuccessHandler CustomSuccessHandler() {
         return new CustomSuccessHandler(passwordEncoder());
+    }
+
+    //apiCheckFilter
+    @Bean
+    public ApiCheckFilter apiCheckFilter() {
+        return new ApiCheckFilter("/notes/**/*", jwtUtil());
+    }
+
+    @Bean
+    public JWTUtil jwtUtil() {
+        return new JWTUtil();
     }
 
 }
